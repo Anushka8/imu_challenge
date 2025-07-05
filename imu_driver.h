@@ -37,7 +37,7 @@ enum CtrlBits
 #define CTRL_STOP (1 << CTRL_STOP_BIT)
 #define CTRL_RESET (1 << CTRL_RESET_BIT)
 #define CTRL_INT (1 << CTRL_INT_BIT)
-#define CTRL_FREQ_MASK 0xFFF0
+#define CTRL_FREQ_MASK 0xFFF
 
 // structure to hold acc and gyro readings
 typedef struct

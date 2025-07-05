@@ -3,7 +3,9 @@
 
 void imu_init(uint16_t freq)
 {
-    IMU_CTRL_REG = (freq << 4) | CTRL_START;
+    // if freq is greater than 12-bit value, set it to max 12-bit value
+    // frequency value is 1:1 with Hz
+    IMU_CTRL_REG = ((freq & CTRL_FREQ_MASK) << 4) | CTRL_START;
 }
 
 static int16_t clamp(int16_t val, int16_t min, int16_t max) {
@@ -27,8 +29,8 @@ void imu_read(imu_data_t *data)
 
 void imu_handle_interrupt(void)
 {
-    // if the device is off, don't trigger the interupt
-    if (!(IMU_CTRL_REG & CTRL_START)) {
+    // if the device is reset, don't trigger the interupt
+    if (IMU_CTRL_REG & CTRL_RESET) {
         printf("[SKIP] IMU is OFF. Ignoring interrupt.\n");
         return;
     }
@@ -37,7 +39,7 @@ void imu_handle_interrupt(void)
     {
         imu_data_t data;
         imu_read(&data);
-        printf("[INTERRUPT] Accel: %dg %dg %dg | Gyro: %ddps %ddps %ddps\n",
+        printf("[INTERRUPT] Accel: %d %d %d | Gyro: %d %d %d\n",
                data.ax, data.ay, data.az, data.gx, data.gy, data.gz);
         IMU_CTRL_REG &= ~CTRL_INT; // Clear INT bit after read
     }
